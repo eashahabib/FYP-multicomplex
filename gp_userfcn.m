@@ -90,7 +90,7 @@ for i=1:length(string2Beval)
                 %disp(i)
                 coeffies(i,k) = str2num(char_temp(str_idx(k)+1:end_idx(k)-1));
                 temp = temp + breakdown(k) + string(coeffies(i,k)) + "+0.000001i";
-                temp2 = temp2 + breakdown(k) + string(coeffies(i,k)) + "+multi([0, 0.000001])";
+                temp2 = temp2 + breakdown(k) + string(coeffies(i,k)) + "+0.000001";
                 
             end
             string2Beval(i) = temp + breakdown(end);
@@ -110,9 +110,9 @@ end
 
 gp2 = gp;
 
-
 gp2.pop = C;
-%gp2 = evalfitness(gp2);
+
+gp2 = evalfitness(gp2);
 
 
 h = 0.000001;
@@ -124,7 +124,6 @@ Res_cs = round(Res_cs, 3);
 
 
 gp2.pop = C2;
-% gp2.nodes.functions.active_name_UC{4} = 'MRDIVIDE';
 gp2 = evalfitness(gp2);
 
 Res_fd = (gp2.fitness.values-gp.fitness.values)/h; %check with FD method
