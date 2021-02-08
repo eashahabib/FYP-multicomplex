@@ -187,6 +187,7 @@ methods
        function out = uplus(obj1)                                % Unary Plus
             out=multi(+obj1.zn);
        end
+       
      
               
        function out = lt(self,other)              % Less than, self < other
@@ -262,7 +263,17 @@ methods
                 end
             end
             
-            out=multi(arrayM(matrep(self)/matrep(other)));
+            % EDIT: to make it work with singular division, adding pinv or
+            % svd
+            B = matrep(other);
+            
+            if ( any(isnan(other.zn)) || any(isinf(other.zn)) )
+                out = multi([nan nan]);
+            else %if (rcond(B)<1e-10 )
+                out=multi(arrayM( matrep(self)*pinv(B) )); %singular B
+            %else
+            %    out=multi(arrayM(matrep(self)/B));
+            end
             
        end
        
@@ -716,6 +727,7 @@ methods
      end
 
                             %% Utility functions %%
+                            
      
       function out = imgn(C)
           
@@ -894,3 +906,4 @@ end
 end
 
 end
+
