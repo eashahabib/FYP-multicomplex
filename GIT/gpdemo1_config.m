@@ -1,0 +1,74 @@
+function gp = gpdemo1_config(gp)
+%GPDEMO1_CONFIG Config file demonstrating simple (naive) symbolic regression.
+%
+%   The simple quartic polynomial (y=x+x^2+x^3+x^4) from John Koza's 1992
+%   Genetic Programming book is used. It is very easy to solve.
+%
+%   GP = GPDEMO1_CONFIG(GP) returns the user specified parameter structure
+%   GP for the quartic polynomial problem.
+%   
+%   Example:
+%
+%   GP = GPTIPS(@GPDEMO1_CONFIG) performs a GPTIPS run using this
+%   configuration file and returns the results in a structure called GP.
+%
+%   Copyright (c) 2009-2015 Dominic Searson 
+%
+%   GPTIPS 2
+% 
+%   See also QUARTIC_FITFUN, GPDEMO1
+
+%run control
+gp.runcontrol.pop_size = 150;			
+gp.runcontrol.num_gen = 300;
+gp.runcontrol.runs = 1;
+gp.runcontrol.verbose = 10;  
+gp.runcontrol.timeout = inf;            %seconds
+gp.runcontrol.parallel.auto = true;
+
+%selection
+gp.selection.tournament.size = 10;
+gp.selection.tournament.p_pareto = 0.3;
+gp.selection.elite_fraction = 0.2;
+
+%fitness function
+gp.fitness.fitfun = @quartic_fitfun; 
+gp.fitness.terminate = true;
+gp.fitness.terminate_value = 0.3;
+
+%quartic polynomial data  
+[x1, x2] = meshgrid(-5:0.4:5, -5:0.4:5);
+x1 = x1(:); x2 = x2(:);
+y = 8./(2+x1.^2 + x2.^2); 
+gp.userdata.ytrain = y;
+gp.userdata.xtrain = [x1 x2];
+
+%test grid
+[x1, x2] = meshgrid(-5:0.2:5, -5:0.2:5);
+x1 = x1(:); x2 = x2(:);
+y = 8./(2+x1.^2 + x2.^2);
+gp.userdata.ytest = y;
+gp.userdata.xtest = [x1 x2];
+
+% x=linspace(-1,1,20)'; 
+% gp.userdata.x = x;
+% gp.userdata.y = 1./x + 22*x.^2 + x.^3 + x.^4; 
+% gp.userdata.name = 'Quartic Polynomial';
+
+%input configuration 
+gp.nodes.inputs.num_inp = size(gp.userdata.xtrain,2); 		         
+
+%quartic example doesn't need constants
+gp.nodes.const.p_ERC = 0.2;		              
+
+%maximum depth of trees 
+gp.treedef.max_depth = 6; 
+ 	              
+%maximum depth of sub-trees created by mutation operator
+gp.treedef.max_mutate_depth = 3;
+
+%genes
+gp.genes.multigene = false;
+
+%define function nodes
+gp.nodes.functions.name = {'times','minus','plus','rdivide', 'exp', 'sin', 'cos', 'tan'}; % 'sin','cos','exp', 'power'
